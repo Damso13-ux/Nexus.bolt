@@ -29,17 +29,12 @@ Deno.serve(async (req: Request) => {
       }
     );
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
       return new Response(
         JSON.stringify({ error: "Non authentifié" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -48,53 +43,24 @@ Deno.serve(async (req: Request) => {
     if (!plan || !["monthly", "annual"].includes(plan)) {
       return new Response(
         JSON.stringify({ error: "Plan invalide" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Find an active "Nexus Premium" product, or reactivate/create one
-    let product: Stripe.Product | null = null;
-
-    const activeProducts = await stripe.products.search({
-      query: 'name:"Nexus Premium" active:"true"',
-    });
-
-    if (activeProducts.data.length > 0) {
-      product = activeProducts.data[0];
-    } else {
-      // Check if there's an inactive product we can reactivate
-      const allProducts = await stripe.products.search({
-        query: 'name:"Nexus Premium"',
-      });
-
-      if (allProducts.data.length > 0) {
-        product = await stripe.products.update(allProducts.data[0].id, {
-          active: true,
-        });
-      } else {
-        product = await stripe.products.create({
-          name: "Nexus Premium",
-          description:
-            "Accès illimité à tous les articles premium, newsletter hebdomadaire exclusive et analyses approfondies.",
-        });
-      }
-    }
-
-    // Find or create the price for the selected plan
     const interval = plan === "monthly" ? "month" : "year";
     const unitAmount = plan === "monthly" ? 600 : 4900;
 
-    const existingPrices = await stripe.prices.list({
-      product: product.id,
+    // Cherche directement le bon prix actif (6€/mois ou 49€/an)
+    // sans passer par le produit — plus fiable
+    const allPrices = await stripe.prices.list({
       active: true,
       type: "recurring",
+      limit: 100,
     });
 
     let priceId: string | undefined;
-    for (const p of existingPrices.data) {
+
+    for (const p of allPrices.data) {
       if (
         p.recurring?.interval === interval &&
         p.unit_amount === unitAmount &&
@@ -105,13 +71,20 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    // Si aucun prix trouvé, on en crée un avec un nouveau produit
     if (!priceId) {
+      const product = await stripe.products.create({
+        name: "Nexus Premium",
+        description: "Accès illimité à tous les articles premium et newsletter exclusive.",
+      });
+
       const newPrice = await stripe.prices.create({
         product: product.id,
         unit_amount: unitAmount,
         currency: "eur",
         recurring: { interval },
       });
+
       priceId = newPrice.id;
     }
 
@@ -129,13 +102,11 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
   } catch (err: any) {
     return new Response(
       JSON.stringify({ error: err.message || "Erreur serveur" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
