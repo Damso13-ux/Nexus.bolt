@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-cream text-neutral-800 font-sans;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .dark body,
+  html.dark body {
+    @apply bg-neutral-900 text-neutral-200;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-semibold;
+    line-height: 1.2;
+  }
+
+  ::selection {
+    @apply bg-accent/15 text-neutral-900;
+  }
+
+  .dark ::selection {
+    @apply bg-accent/30 text-white;
+  }
+}
+
+@layer components {
+  .reading-progress {
+    @apply fixed top-0 left-0 h-[3px] bg-accent z-[100] transition-none;
+  }
+
+  .article-body h2 {
+    @apply font-serif text-2xl md:text-3xl font-semibold mt-10 mb-4 text-neutral-900;
+  }
+  .dark .article-body h2 {
+    @apply text-neutral-100;
+  }
+
+  .article-body h3 {
+    @apply font-serif text-xl md:text-2xl font-semibold mt-8 mb-3 text-neutral-900;
+  }
+  .dark .article-body h3 {
+    @apply text-neutral-100;
+  }
+
+  .article-body p {
+    @apply mb-5 text-neutral-700 leading-relaxed;
+  }
+  .dark .article-body p {
+    @apply text-neutral-300;
+  }
+
+  .article-body blockquote {
+    @apply border-l-4 border-accent pl-5 my-6 italic text-neutral-600;
+  }
+  .dark .article-body blockquote {
+    @apply text-neutral-400;
+  }
+
+  .article-body ul {
+    @apply list-disc pl-6 mb-5 space-y-2 text-neutral-700;
+  }
+  .dark .article-body ul {
+    @apply text-neutral-300;
+  }
+
+  .article-body ol {
+    @apply list-decimal pl-6 mb-5 space-y-2 text-neutral-700;
+  }
+  .dark .article-body ol {
+    @apply text-neutral-300;
+  }
+
+  .article-body img {
+    @apply rounded-lg my-6 w-full;
+  }
+
+  .article-body a {
+    @apply text-accent underline underline-offset-2 hover:text-accent-dark transition-colors;
+  }
+
+  .article-body strong {
+    @apply font-semibold text-neutral-800;
+  }
+  .dark .article-body strong {
+    @apply text-neutral-100;
+  }
+
+  .btn-primary {
+    @apply bg-accent text-white px-6 py-3 rounded-lg font-medium hover:bg-accent-dark transition-all duration-200 active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply bg-neutral-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-neutral-900 transition-all duration-200 active:scale-[0.98];
+  }
+  .dark .btn-secondary {
+    @apply bg-neutral-700 hover:bg-neutral-600;
+  }
+
+  .btn-outline {
+    @apply border-2 border-neutral-300 text-neutral-700 px-6 py-3 rounded-lg font-medium hover:border-neutral-800 hover:text-neutral-900 transition-all duration-200;
+  }
+  .dark .btn-outline {
+    @apply border-neutral-600 text-neutral-300 hover:border-neutral-400 hover:text-neutral-100;
+  }
+
+  .premium-badge {
+    @apply inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide;
+  }
+  .dark .premium-badge {
+    @apply bg-amber-900/30 text-amber-400 border-amber-700;
+  }
+
+  .category-pill {
+    @apply inline-block text-xs font-semibold uppercase tracking-wider text-accent hover:text-accent-dark transition-colors;
+  }
+
+  .card-surface {
+    @apply bg-white border border-neutral-200;
+  }
+  .dark .card-surface {
+    @apply bg-neutral-800 border-neutral-700;
+  }
+
+  .input-field {
+    @apply w-full border border-neutral-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white;
+  }
+  .dark .input-field {
+    @apply bg-neutral-800 border-neutral-600 text-neutral-200;
+  }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
